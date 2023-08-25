@@ -14,7 +14,7 @@ todoForm.addEventListener("submit", (e) => {
 
   axios
     .post(
-      "https://crudcrud.com/api/8daa1f8997584bb3a46e7218d0efcf8a/todolist",
+      "https://crudcrud.com/api/84052a90abad4d599f68ba185d9a5a4e/todolist",
       obj
     )
     .then((res) => {
@@ -27,11 +27,24 @@ todoForm.addEventListener("submit", (e) => {
 
 window.addEventListener("DOMContentLoaded", () => {
   axios
-    .get("https://crudcrud.com/api/8daa1f8997584bb3a46e7218d0efcf8a/todolist")
+    .get("https://crudcrud.com/api/84052a90abad4d599f68ba185d9a5a4e/todolist")
     .then((res) => {
       res.data.forEach((element) => {
         showItemOnScreen(element);
       });
+
+      axios
+        .get(
+          "https://crudcrud.com/api/84052a90abad4d599f68ba185d9a5a4e/completedTasks"
+        )
+        .then((completedRes) => {
+          completedRes.data.forEach((data) => {
+            showItemOnCompletedTasks(data);
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     })
     .catch((err) => {
       console.log(err);
@@ -51,16 +64,24 @@ function showItemOnScreen(data) {
 }
 
 function taskCompleated(itemId) {
-  const completedTask = document.getElementById("completedTasks");
+  // console.log(itemId);
   axios
     .get(
-      `https://crudcrud.com/api/8daa1f8997584bb3a46e7218d0efcf8a/todolist/${itemId}`
+      `https://crudcrud.com/api/84052a90abad4d599f68ba185d9a5a4e/todolist/${itemId}`
     )
     .then((res) => {
-      const newList = document.createElement("li");
-      newList.innerHTML = `<li id ="list"> <b>ItemName: </b> ${res.data.itemName} <b>Description: </b>${res.data.description}</li>`;
-      completedTask.appendChild(newList);
-      //   removeItemFromToDoList(itemId);
+      config = {
+        method: "POST",
+        url: "https://crudcrud.com/api/84052a90abad4d599f68ba185d9a5a4e/completedTasks",
+        data: {
+          itemName: res.data.itemName,
+          description: res.data.description,
+        },
+      };
+      axios(config).then((res) => {
+        // console.log(res.data);
+        showItemOnCompletedTasks(res.data);
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -69,7 +90,7 @@ function taskCompleated(itemId) {
   // now I have to delete this from axios because our task is completed
   axios
     .delete(
-      `https://crudcrud.com/api/8daa1f8997584bb3a46e7218d0efcf8a/todolist/${itemId}`
+      `https://crudcrud.com/api/84052a90abad4d599f68ba185d9a5a4e/todolist/${itemId}`
     )
     .then((res) => {
       removeItemFromToDoList(itemId); // removed form screen
@@ -79,6 +100,12 @@ function taskCompleated(itemId) {
     });
 }
 
+function showItemOnCompletedTasks(data) {
+  const completedTask = document.getElementById("completedTasks");
+  const item = document.createElement("li");
+  item.innerHTML = `<li id ="list"> <b>ItemName: </b> ${data.itemName} <b>Description: </b>${data.description}`;
+  completedTask.appendChild(item);
+}
 function removeItemFromToDoList(itemId) {
   const itemToBeDeleted = document.querySelector(`[data-item-id="${itemId}"]`);
 
@@ -90,7 +117,7 @@ function removeItemFromToDoList(itemId) {
 function deleteTask(itemId) {
   axios
     .delete(
-      `https://crudcrud.com/api/8daa1f8997584bb3a46e7218d0efcf8a/todolist/${itemId}`
+      `https://crudcrud.com/api/84052a90abad4d599f68ba185d9a5a4e/todolist/${itemId}`
     )
     .then((res) => {
       removeItemFromToDoList(itemId);
