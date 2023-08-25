@@ -23,6 +23,9 @@ todoForm.addEventListener("submit", (e) => {
     .catch((err) => {
       console.log(err);
     });
+
+  document.getElementById("ItemName").value = "";
+  document.getElementById("description").value = "";
 });
 
 window.addEventListener("DOMContentLoaded", () => {
